@@ -49,4 +49,7 @@
     <a href=".?action=display_questions&userId=<?php echo $userId; ?>&listType=mine"class="btn btn-info" role="button">My Questions</a>
     <a href=".?action=display_questions&userId=<?php echo $userId; ?>&listType=all"class="btn btn-info" role="button">All Questions</a><br><br>
 
+
+    <a href=".?action=logout" class="btn btn-warning" role="button"> Logout</a>
+
 <?php include('abstract-views/footer.php'); ?>

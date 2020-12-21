@@ -6,6 +6,9 @@ require('model/question.php');
 require('model/accounts_db.php');
 require('model/questions_db.php');
 
+session_start();
+
+
 $action = filter_input(INPUT_POST, 'action');
 if ($action == NULL) {
     $action = filter_input(INPUT_GET, 'action');
@@ -16,7 +19,12 @@ if ($action == NULL) {
 
 switch ($action) {
     case 'display_login': {
-        include('views/login.php');
+        if ($_SESSION['userId']) {
+            header('Location: .?action=display_questions');
+        }else{
+            include('views/login.php');
+
+        }
         break;
     }
 
@@ -53,7 +61,8 @@ switch ($action) {
             if ($userId == false) {
                 header('Location: index.php?action=display_registration');
             } else {
-                header("Location: .?action=display_questions&userId=$userId");
+                $_SESSION['userId'] = $userId;
+                header("Location: .?action=display_questions");
             }
         }
 
@@ -120,7 +129,7 @@ switch ($action) {
     }
 
     case 'display_questions': {
-        $userId = filter_input(INPUT_GET, 'userId');
+        $userId = $_SESSION['userId'];
         $listType = filter_input(INPUT_GET, 'listType');
 
 
@@ -148,14 +157,12 @@ switch ($action) {
     case 'display_question':{
         $questionId = filter_input(INPUT_GET, 'userId');
 
-
-        if ($userId == NULL || $userId < 0) {
+        if ($questionId == NULL || $questionId < 0) {
             header('Location: .?action=display_login');
         } else {
             $questions = QuestionsDB::view_question($questionId);
             include('views/display_questions.php');
         }
-        break;
         break;
     }
 
@@ -175,7 +182,7 @@ switch ($action) {
             $conditions_met = 0;
         }
         if (strlen($title) < 3){
-            $error = 'Title should be 3 characters or longer';;
+            $error = 'Title should be 3 characters or longer';
             $conditions_met = 0;
         }
 
@@ -217,6 +224,7 @@ switch ($action) {
             header("Location: .?action=display_questions&userId=$userId");
         }
     }
+
     case 'full_page': {
         $questionId = filter_input(INPUT_POST, 'questionId');
         $userId = filter_input(INPUT_POST, 'userId');
@@ -229,6 +237,16 @@ switch ($action) {
         }
     }
 
+    case 'logout': {
+        session_destroy();
+        $_SESSION = array();
+        $name = session_name();
+        $expire =  strtotime('-1 year');
+        $params = session_get_cookie_params();
+        setcookie($name, '', $expire, $params['path'], $params['domain'], $params['secure'], $params['httponly']);
+        header('Location: .');
+        break;
+    }
     default: {
         $error = 'Unknown Action';
         include('errors/error.php');
