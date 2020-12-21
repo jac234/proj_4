@@ -1,5 +1,8 @@
 <?php
+
 require('model/database.php');
+require('model/account.php');
+require('model/question.php');
 require('model/accounts_db.php');
 require('model/questions_db.php');
 
@@ -45,7 +48,8 @@ switch ($action) {
         if ($conditions_met == 0) {
             include('errors/error.php');
         } else {
-            $userId = validate_login($email, $password);
+            $user = AccountsDB::validate_login($email, $password);
+            $userId = $user->getId();
             if ($userId == false) {
                 header('Location: index.php?action=display_registration');
             } else {
@@ -109,7 +113,7 @@ switch ($action) {
         if ($conditions_met ==0) {
             include('errors/error.php');
         } else {
-            register_new_user($email, $fname, $lname, $birthday, $password);
+            AccountsDB::register_new_user($email, $fname, $lname, $birthday, $password);
             header("Location: .?action=display_questions&userId=$userId");
         }
         break;
@@ -124,7 +128,7 @@ switch ($action) {
             header('Location: .?action=display_login');
         } else {
             $questions = ($listType === 'all') ?
-                get_all_questions() : get_users_questions($userId);
+                QuestionsDB::get_all_questions() : QuestionsDB::get_users_questions($userId);
             include('views/display_questions.php');
         }
         break;
@@ -141,7 +145,17 @@ switch ($action) {
         break;
     }
 
-    case 'display_new_question':{
+    case 'display_question':{
+        $questionId = filter_input(INPUT_GET, 'userId');
+
+
+        if ($userId == NULL || $userId < 0) {
+            header('Location: .?action=display_login');
+        } else {
+            $questions = QuestionsDB::view_question($questionId);
+            include('views/display_questions.php');
+        }
+        break;
         break;
     }
 
@@ -185,7 +199,7 @@ switch ($action) {
         if ($conditions_met ==0) {
             include('errors/error.php');
         } else {
-            create_question($title, $body, $skills, $userId);
+            QuestionsDB::create_question($title, $body, $skills, $userId);
             header("Location: .?action=display_questions&userId=$userId");
         }
 
@@ -199,8 +213,19 @@ switch ($action) {
             $error = 'All Fields are required';
             include('errors/error.php');
         } else {
-            delete_question($questionId);
+            QuestionsDB::delete_question($questionId);
             header("Location: .?action=display_questions&userId=$userId");
+        }
+    }
+    case 'full_page': {
+        $questionId = filter_input(INPUT_POST, 'questionId');
+        $userId = filter_input(INPUT_POST, 'userId');
+        if ($questionId == NULL || $userId == NULL) {
+            $error = 'All Fields are required';
+            include('errors/error.php');
+        } else {
+            $questions = QuestionsDB::view_question($questionId);
+            header("Location: .?action=display_questions&userId=$questionId");
         }
     }
 

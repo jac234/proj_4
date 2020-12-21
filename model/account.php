@@ -1,4 +1,5 @@
 <?php
+
 class Account {
     private $id, $email, $fname, $lname, $birthday, $password;
 
@@ -19,9 +20,6 @@ class Account {
         $this->id = $id;
     }
 
-    /**
-     * @return mixed
-     */
     public function getEmail()
     {
         return $this->email;

@@ -17,6 +17,7 @@
     </thead>
     <?php foreach ($questions as $question) : ?>
         <tr class="table-success">
+
             <td><?php echo $question['id']?></td>
             <td><?php echo $question['owneremail']?></td>
             <td><?php echo $question['ownerid']?></td>
@@ -32,7 +33,14 @@
                     <input type="hidden" name="userId" value="<?php echo $userId; ?>">
                     <input type="submit" value="Delete">
                 </form>
+                <form action="." method="post">
+                    <input type="hidden" name="action" value="full_page">
+                    <input type="hidden" name="questionId" value="<?php echo $question['id']; ?>">
+                    <input type="hidden" name="userId" value="<?php echo $userId; ?>">
+                    <input type="submit" value="Full Page View">
+                </form>
             </td>
+
         </tr>
     <?php endforeach; ?>
 </table>
