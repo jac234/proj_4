@@ -155,7 +155,7 @@ switch ($action) {
     }
 
     case 'display_question':{
-        $questionId = filter_input(INPUT_GET, 'userId');
+        $questionId = filter_input(INPUT_GET, 'questionId');
 
         if ($questionId == NULL || $questionId < 0) {
             header('Location: .?action=display_login');
@@ -233,7 +233,7 @@ switch ($action) {
             include('errors/error.php');
         } else {
             $questions = QuestionsDB::view_question($questionId);
-            header("Location: .?action=display_questions&userId=$questionId");
+            header("Location: .?action=display_question&userId=$questionId");
         }
     }
 
